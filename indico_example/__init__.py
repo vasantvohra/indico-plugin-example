@@ -36,8 +36,7 @@ class ExamplePlugin(IndicoPlugin):
 
     def init(self):
         super(ExamplePlugin, self).init()
-        self.inject_css('global_css')
-        self.inject_js('global_js')
+        self.inject_bundle('main.js')
         self.connect(signals.plugin.shell_context, self._extend_shell_context)
         self.connect(signals.plugin.cli, self._add_cli)
 
@@ -75,12 +74,6 @@ class ExamplePlugin(IndicoPlugin):
         from flask import render_template, render_template_string
         add_to_context(render_template, color='magenta!')
         add_to_context(render_template_string, color='magenta!')
-
-    def register_assets(self):
-        self.register_js_bundle('example_js', 'js/example.js')
-        self.register_js_bundle('global_js', 'js/global.js')
-        self.register_css_bundle('example_css', 'css/example.scss')
-        self.register_css_bundle('global_css', 'css/global.scss')
 
 
 blueprint = IndicoPluginBlueprint('example', __name__)

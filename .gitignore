@@ -7,3 +7,5 @@
 *.mo
 dist/
 build/
+webpack-build-config.json
+node_modules/
