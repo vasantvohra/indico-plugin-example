@@ -1,0 +1,6 @@
+{
+  "entry": {
+    "main": "./global.js",
+    "example": "./example.js"
+  }
+}
