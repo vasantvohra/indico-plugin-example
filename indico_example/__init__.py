@@ -37,6 +37,7 @@ class ExamplePlugin(IndicoPlugin):
     def init(self):
         super(ExamplePlugin, self).init()
         self.inject_bundle('main.js')
+        self.inject_bundle('main.css')
         self.connect(signals.plugin.shell_context, self._extend_shell_context)
         self.connect(signals.plugin.cli, self._add_cli)
 
