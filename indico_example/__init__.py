@@ -6,7 +6,7 @@ from wtforms import StringField, BooleanField
 
 from indico.cli.core import cli_command, cli_group
 from indico.core import signals
-from indico.util.i18n import session_language, get_current_locale, IndicoLocale, make_bound_gettext, make_bound_ngettext
+from indico.util.i18n import force_locale, get_current_locale, IndicoLocale, make_bound_gettext, make_bound_ngettext
 from indico.util.i18n import gettext as core_gettext
 from indico.core.plugins import IndicoPlugin, IndicoPluginBlueprint
 from indico.web.forms.base import IndicoForm
@@ -49,23 +49,23 @@ class ExamplePlugin(IndicoPlugin):
         def example():
             """Example command from example plugin"""
             with current_app.test_request_context():
-                with session_language('es_ES'):
-                    print _('example plugin says hi'), current_plugin
+                with force_locale('es_ES'):
+                    print(_('example plugin says hi'), current_plugin)
                     if self.settings.get('show_message'):
-                        print self.settings.get('dummy_message')
+                        print(self.settings.get('dummy_message'))
 
         @cli_group(invoke_without_command=True)
         def examples():
             """Example group from example plugin"""
-            print 'root', current_plugin
+            print('root', current_plugin)
 
         @examples.command()
         def a():
-            print 'a', current_plugin
+            print('a', current_plugin)
 
         @examples.command()
         def b():
-            print 'b', current_plugin
+            print('b', current_plugin)
 
         yield example
         yield examples
@@ -91,7 +91,7 @@ class WPExample(WPDecorated):
 
 class RHExample(RH):
     def _process(self):
-        return WPExample(self, foo=u'bar').display()
+        return WPExample(self, foo='bar').display()
 
 
 class RHTest(RH):
