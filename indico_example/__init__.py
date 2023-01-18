@@ -6,16 +6,24 @@ from wtforms import StringField, BooleanField
 
 from indico.cli.core import cli_command, cli_group
 from indico.core import signals
-from indico.util.i18n import session_language, get_current_locale, IndicoLocale, make_bound_gettext, make_bound_ngettext
+from indico.util.i18n import force_locale, get_current_locale, IndicoLocale, make_bound_gettext, make_bound_ngettext
 from indico.util.i18n import gettext as core_gettext
 from indico.core.plugins import IndicoPlugin, IndicoPluginBlueprint
 from indico.web.forms.base import IndicoForm
 from indico.web.rh import RH
-from indico.web.views import WPDecorated
-
+from indico.web.views import WPDecorated, WPJinjaMixin
 
 gettext = _ = make_bound_gettext('example')
 ngettext = make_bound_ngettext('example')
+
+
+class WPTestView(WPJinjaMixin, WPDecorated):
+    """Base WP for Public view on DutyStation."""
+
+    template_prefix = 'example:/'
+
+    def _get_body(self, params):
+        return self._get_page_content(params)
 
 
 class SettingsForm(IndicoForm):
@@ -38,6 +46,7 @@ class ExamplePlugin(IndicoPlugin):
         super(ExamplePlugin, self).init()
         self.inject_bundle('main.js')
         self.inject_bundle('main.css')
+        self.inject_bundle('test.js', WPTestView)
         self.connect(signals.plugin.shell_context, self._extend_shell_context)
         self.connect(signals.plugin.cli, self._add_cli)
 
@@ -49,23 +58,23 @@ class ExamplePlugin(IndicoPlugin):
         def example():
             """Example command from example plugin"""
             with current_app.test_request_context():
-                with session_language('es_ES'):
-                    print _('example plugin says hi'), current_plugin
+                with force_locale('es_ES'):
+                    print(_('example plugin says hi'), current_plugin)
                     if self.settings.get('show_message'):
-                        print self.settings.get('dummy_message')
+                        print(self.settings.get('dummy_message'))
 
         @cli_group(invoke_without_command=True)
         def examples():
             """Example group from example plugin"""
-            print 'root', current_plugin
+            print('root', current_plugin)
 
         @examples.command()
         def a():
-            print 'a', current_plugin
+            print('a', current_plugin)
 
         @examples.command()
         def b():
-            print 'b', current_plugin
+            print('b', current_plugin)
 
         yield example
         yield examples
@@ -81,7 +90,8 @@ blueprint = IndicoPluginBlueprint('example', __name__)
 
 
 class WPExample(WPDecorated):
-    def _getBody(self, params):
+
+    def _get_body(self, params):
         locale = get_current_locale()
         params['language'] = IndicoLocale.parse('en').languages[locale.language]
         params['python_msg_core_i18n'] = core_gettext('Hello world!')
@@ -96,7 +106,7 @@ class RHExample(RH):
 
 class RHTest(RH):
     def _process(self):
-        return render_plugin_template('test.html')
+        return WPTestView.render_template('test.html')
 
 
 blueprint.add_url_rule('/example', 'example', view_func=RHExample)

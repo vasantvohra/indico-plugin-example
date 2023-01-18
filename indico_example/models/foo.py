@@ -1,5 +1,4 @@
 from indico.core.db.sqlalchemy import db
-from indico.util.string import return_ascii
 
 
 class Foo(db.Model):
@@ -24,6 +23,5 @@ class Foo(db.Model):
         backref=db.backref('example_foo', cascade='all, delete-orphan', lazy='dynamic'),
     )
 
-    @return_ascii
     def __repr__(self):
-        return u'<Foo({}, {}, {})>'.format(self.id, self.bar, self.location)
+        return '<Foo({}, {}, {})>'.format(self.id, self.bar, self.location)

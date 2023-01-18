@@ -1,0 +1,3 @@
+[submodule "indico-core"]
+	path = indico-core
+	url = https://github.com/vasantvohra/indico-core.git
